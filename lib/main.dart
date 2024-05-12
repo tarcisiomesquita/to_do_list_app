@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:to_do_list_app/components/task_form.dart';
 import 'package:to_do_list_app/components/task_list.dart';
 import 'package:to_do_list_app/models/task.dart';
 import 'package:uuid/uuid.dart';
@@ -55,18 +56,41 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _addTask(String title, String description) {
+    final newTask = Task(
+      id: const Uuid().v4(),
+      title: title,
+      description: description,
+      isChecked: false,
+    );
+    setState(() {
+      _tasks.add(newTask);
+    });
+    Navigator.pop(context);
+  }
+
+  void _openTaskModal() {
+    showModalBottomSheet(context: context, builder: (_) => TaskForm(_addTask));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Lista de Tarfeas'),
+      appBar: AppBar(
+        title: const Text('Lista de Tarfeas'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TaskList(_tasks, _checkBoxSwitch),
+          ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              TaskList(_tasks, _checkBoxSwitch),
-            ],
-          ),
-        ));
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openTaskModal,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
   }
 }

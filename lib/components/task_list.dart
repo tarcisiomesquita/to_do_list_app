@@ -9,6 +9,12 @@ class TaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    tasks.sort((a, b) {
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    });
+    tasks.sort((a, b) {
+      return a.isChecked.toString().compareTo(b.isChecked.toString());
+    });
     return SizedBox(
         height: 300,
         child: ListView.builder(
