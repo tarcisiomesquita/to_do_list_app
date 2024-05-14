@@ -79,6 +79,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.pop(context);
   }
 
+  void _deleteTask(String id) {
+    final index = _tasks.indexWhere((task) => task.id == id);
+    setState(() {
+      _tasks.removeAt(index);
+    });
+  }
+
   void _openTaskModal() {
     showModalBottomSheet(context: context, builder: (_) => TaskForm(_addTask));
   }
@@ -97,14 +104,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista de Tarfeas'),
+        actions: [
+          IconButton(onPressed: _openTaskModal, icon: const Icon(Icons.add))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             TaskList(
-                tasks: _tasks,
-                onCheck: _checkBoxSwitch,
-                onEdit: _openTaksEditModal),
+              tasks: _tasks,
+              onCheck: _checkBoxSwitch,
+              onEdit: _openTaksEditModal,
+              onDelete: _deleteTask,
+            ),
           ],
         ),
       ),
