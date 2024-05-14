@@ -1,7 +1,7 @@
 class Task {
-  final String id;
-  final String title;
-  final String description;
+  String id;
+  String title;
+  String description;
   bool isChecked;
 
   Task({

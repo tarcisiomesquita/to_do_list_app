@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/task.dart';
 
 class TaskList extends StatelessWidget {
-  const TaskList(this.tasks, this.onCheck, {super.key});
+  const TaskList(
+      {required this.tasks,
+      required this.onCheck,
+      required this.onEdit,
+      super.key});
 
   final List<Task> tasks;
   final void Function(String id, bool isChecked) onCheck;
+  final void Function(Task task) onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +31,19 @@ class TaskList extends StatelessWidget {
                   vertical: 3,
                   horizontal: 5,
                 ),
-                child: Card(
-                  elevation: 5,
-                  child: CheckboxListTile(
-                    value: task.isChecked,
-                    onChanged: (bool? value) {
-                      onCheck(task.id, value!);
-                    },
-                    title: Text(task.title),
-                    subtitle: Text(task.description),
+                child: GestureDetector(
+                  onTap: () => onEdit(task),
+                  child: Card(
+                    elevation: 5,
+                    child: ListTile(
+                      trailing: Checkbox(
+                          value: task.isChecked,
+                          onChanged: (bool? value) {
+                            onCheck(task.id, value!);
+                          }),
+                      title: Text(task.title),
+                      subtitle: Text(task.description),
+                    ),
                   ),
                 ),
               );

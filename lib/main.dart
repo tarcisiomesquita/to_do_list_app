@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:to_do_list_app/components/task_edit_form.dart';
 import 'package:to_do_list_app/components/task_form.dart';
 import 'package:to_do_list_app/components/task_list.dart';
 import 'package:to_do_list_app/models/task.dart';
@@ -69,8 +70,26 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.pop(context);
   }
 
+  void _editTask(Task task) {
+    final index = _tasks.indexWhere((e) => e.id == task.id);
+
+    setState(() {
+      _tasks[index] = task;
+    });
+    Navigator.pop(context);
+  }
+
   void _openTaskModal() {
     showModalBottomSheet(context: context, builder: (_) => TaskForm(_addTask));
+  }
+
+  void _openTaksEditModal(Task task) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) => TaskEditForm(
+              task,
+              _editTask,
+            ));
   }
 
   @override
@@ -82,13 +101,19 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            TaskList(_tasks, _checkBoxSwitch),
+            TaskList(
+                tasks: _tasks,
+                onCheck: _checkBoxSwitch,
+                onEdit: _openTaksEditModal),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openTaskModal,
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: FloatingActionButton(
+          onPressed: _openTaskModal,
+          child: const Icon(Icons.add),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
