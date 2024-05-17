@@ -47,10 +47,11 @@ class _TaskEditFormState extends State<TaskEditForm> {
                   decoration: const InputDecoration(labelText: 'Descrição'),
                   onSubmitted: (_) => _submitForm(),
                 ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(
+                    ElevatedButton(
                         onPressed: _submitForm,
                         child: const Text('Salvar alterações'))
                   ],

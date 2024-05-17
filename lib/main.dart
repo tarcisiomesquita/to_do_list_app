@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:to_do_list_app/styles/app_themes.dart';
 import 'package:to_do_list_app/components/task_edit_form.dart';
 import 'package:to_do_list_app/components/task_form.dart';
 import 'package:to_do_list_app/components/task_list.dart';
@@ -16,10 +15,7 @@ class ToDoListApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppThemes().myTheme,
       home: const MyHomePage(),
     );
   }
@@ -103,21 +99,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Tarfeas'),
+        title: const Text('Lista de Tarefas'),
         actions: [
           IconButton(onPressed: _openTaskModal, icon: const Icon(Icons.add))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            TaskList(
-              tasks: _tasks,
-              onCheck: _checkBoxSwitch,
-              onEdit: _openTaksEditModal,
-              onDelete: _deleteTask,
-            ),
-          ],
+      body: SafeArea(
+        minimum: const EdgeInsets.all(8),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TaskList(
+                tasks: _tasks,
+                onCheck: _checkBoxSwitch,
+                onEdit: _openTaksEditModal,
+                onDelete: _deleteTask,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Padding(

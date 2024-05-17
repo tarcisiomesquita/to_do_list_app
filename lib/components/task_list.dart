@@ -24,47 +24,77 @@ class TaskList extends StatelessWidget {
       return a.isChecked.toString().compareTo(b.isChecked.toString());
     });
     return SizedBox(
-      height: 500,
-      child: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (ctx, index) {
-          final task = tasks[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 3,
-              horizontal: 5,
-            ),
-            child: GestureDetector(
-              onTap: () => onEdit(task),
-              child: Slidable(
-                endActionPane: ActionPane(
-                  motion: const ScrollMotion(),
-                  extentRatio: 1 / 5,
-                  children: [
-                    SlidableAction(
-                        onPressed: (_) => onDelete(task.id),
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete),
-                  ],
+      height: 600,
+      child: tasks.isEmpty
+          ? Column(
+              children: [
+                Text(
+                  'Nenhuma tarefa cadastrada',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                child: Card(
-                  elevation: 5,
-                  child: ListTile(
-                    trailing: Checkbox(
-                        value: task.isChecked,
-                        onChanged: (bool? value) {
-                          onCheck(task.id, value!);
-                        }),
-                    title: Text(task.title),
-                    subtitle: Text(task.description),
+                const SizedBox(
+                  height: 30,
+                ),
+                SizedBox(
+                  height: 200,
+                  child: Image.asset(
+                    'assets/images/waiting.png',
+                    fit: BoxFit.cover,
                   ),
-                ),
-              ),
+                )
+              ],
+            )
+          : ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (ctx, index) {
+                final task = tasks[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 10,
+                  ),
+                  child: GestureDetector(
+                    onTap: () => onEdit(task),
+                    child: Slidable(
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        extentRatio: 1 / 5,
+                        children: [
+                          SlidableAction(
+                              onPressed: (_) => onDelete(task.id),
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                              icon: Icons.delete),
+                        ],
+                      ),
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                          ),
+                        ),
+                        // elevation: 5,
+                        child: ListTile(
+                          trailing: Checkbox(
+                              value: task.isChecked,
+                              onChanged: (bool? value) {
+                                onCheck(task.id, value!);
+                              }),
+                          title: Text(task.title),
+                          subtitle: Text(task.description),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

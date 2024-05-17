@@ -16,7 +16,7 @@ class TaskFormState extends State<TaskForm> {
   void _submitForm() {
     final title = _titleController.text;
     final description = _descriptionController.text;
-    if (title.isEmpty && description.isEmpty) {
+    if (title.isEmpty || description.isEmpty) {
       return;
     }
     widget.onSubmit(title, description);
@@ -39,6 +39,7 @@ class TaskFormState extends State<TaskForm> {
               onSubmitted: (_) => _submitForm(),
               decoration: const InputDecoration(labelText: 'Descrição'),
             ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
