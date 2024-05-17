@@ -17,31 +17,25 @@ class TaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    tasks.sort((a, b) {
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
-    });
-    tasks.sort((a, b) {
-      return a.isChecked.toString().compareTo(b.isChecked.toString());
-    });
     return SizedBox(
-      height: 600,
+      height: MediaQuery.of(context).size.height * 0.8,
       child: tasks.isEmpty
           ? Column(
               children: [
+                const SizedBox(height: 20),
                 Text(
                   'Nenhuma tarefa cadastrada',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const Spacer(),
                 SizedBox(
                   height: 200,
                   child: Image.asset(
                     'assets/images/waiting.png',
                     fit: BoxFit.cover,
                   ),
-                )
+                ),
+                const Spacer()
               ],
             )
           : ListView.builder(
@@ -61,14 +55,17 @@ class TaskList extends StatelessWidget {
                         extentRatio: 1 / 5,
                         children: [
                           SlidableAction(
-                              onPressed: (_) => onDelete(task.id),
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
-                              icon: Icons.delete),
+                            onPressed: (_) => onDelete(task.id),
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              bottomRight: Radius.circular(10),
+                            ),
+                            icon: Icons.delete,
+                            label: 'Deletar',
+                            padding: EdgeInsets.zero,
+                          ),
                         ],
                       ),
                       child: Card(
@@ -79,15 +76,15 @@ class TaskList extends StatelessWidget {
                             bottomLeft: Radius.circular(10),
                           ),
                         ),
-                        // elevation: 5,
                         child: ListTile(
+                          title: Text(task.title,
+                              style: Theme.of(context).textTheme.titleMedium),
+                          subtitle: Text(task.description),
                           trailing: Checkbox(
                               value: task.isChecked,
                               onChanged: (bool? value) {
                                 onCheck(task.id, value!);
                               }),
-                          title: Text(task.title),
-                          subtitle: Text(task.description),
                         ),
                       ),
                     ),

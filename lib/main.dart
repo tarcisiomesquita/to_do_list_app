@@ -29,22 +29,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Task> _tasks = [
-    Task(
-      id: const Uuid().v4(),
-      title: 'Limpar caixa de areia dos gatos',
-      description:
-          'Retirar e colocar em um saco de lixo a areia da caixa e repor',
-      isChecked: false,
-    ),
-    Task(
-      id: const Uuid().v4(),
-      title: 'Arrumar cozinha',
-      description:
-          'Enxugar e guardas louças na escorredeira e lavar louças restantes',
-      isChecked: false,
-    ),
-  ];
+  final List<Task> _tasks = [];
+
+  List<Task> _sortedTaskList() {
+    return List<Task>.from(_tasks)
+      ..sort((a, b) {
+        return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+      })
+      ..sort((a, b) {
+        return a.isChecked.toString().compareTo(b.isChecked.toString());
+      });
+  }
 
   void _checkBoxSwitch(String id, bool value) {
     final index = _tasks.indexWhere((task) => task.id == id);
@@ -100,18 +95,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista de Tarefas'),
+        centerTitle: true,
         actions: [
           IconButton(onPressed: _openTaskModal, icon: const Icon(Icons.add))
         ],
       ),
       body: SafeArea(
-        minimum: const EdgeInsets.all(8),
+        minimum: const EdgeInsets.symmetric(vertical: 5),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TaskList(
-                tasks: _tasks,
+                tasks: _sortedTaskList(),
                 onCheck: _checkBoxSwitch,
                 onEdit: _openTaksEditModal,
                 onDelete: _deleteTask,
