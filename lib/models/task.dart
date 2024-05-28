@@ -3,11 +3,12 @@ class Task {
   String title;
   String description;
   bool isChecked;
+  final DateTime date;
 
-  Task({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.isChecked,
-  });
+  Task(
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.isChecked,
+      required this.date});
 }

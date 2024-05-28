@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list_app/utils/format.intl.dart';
+import 'package:to_do_list_app/utils/task_manager.dart';
 
 class TaskForm extends StatefulWidget {
-  const TaskForm(this.onSubmit, {super.key});
-
-  final void Function(String title, String description) onSubmit;
+  const TaskForm({super.key});
 
   @override
   State<TaskForm> createState() => TaskFormState();
@@ -13,13 +13,32 @@ class TaskFormState extends State<TaskForm> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  DateTime _selectedDate = DateTime.now();
+
   void _submitForm() {
     final title = _titleController.text;
     final description = _descriptionController.text;
     if (title.isEmpty || description.isEmpty) {
       return;
     }
-    widget.onSubmit(title, description);
+
+    TasksManager.instance.addTask(title, description, _selectedDate);
+    Navigator.pop(context);
+  }
+
+  void _showDatePicker() {
+    showDatePicker(
+            context: context,
+            firstDate: DateTime.now(),
+            lastDate: DateTime.now().add(const Duration(days: 6)))
+        .then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
   }
 
   @override
@@ -40,6 +59,15 @@ class TaskFormState extends State<TaskForm> {
               decoration: const InputDecoration(labelText: 'Descrição'),
             ),
             const SizedBox(height: 20),
+            Row(
+              children: [
+                Text('Data: ${formatDate(_selectedDate)}'),
+                const Spacer(),
+                TextButton(
+                    onPressed: _showDatePicker,
+                    child: const Text('Selecionar Data'))
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

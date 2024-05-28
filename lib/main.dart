@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:to_do_list_app/components/date_bar.dart';
+import 'package:to_do_list_app/data/dummy_data.dart';
 import 'package:to_do_list_app/styles/app_themes.dart';
 import 'package:to_do_list_app/components/task_edit_form.dart';
 import 'package:to_do_list_app/components/task_form.dart';
 import 'package:to_do_list_app/components/task_list.dart';
 import 'package:to_do_list_app/models/task.dart';
+import 'package:to_do_list_app/utils/methods.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -14,7 +20,16 @@ class ToDoListApp extends StatelessWidget {
   const ToDoListApp({super.key});
   @override
   Widget build(BuildContext context) {
+    Intl.defaultLocale = 'pt_BR';
+    initializeDateFormatting('pt_BR', null);
+
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('pt', 'BR')],
       theme: AppThemes().myTheme,
       home: const MyHomePage(),
     );
@@ -29,65 +44,50 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Task> _tasks = [];
-
-  List<Task> _sortedTaskList() {
-    return List<Task>.from(_tasks)
-      ..sort((a, b) {
-        return a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      })
-      ..sort((a, b) {
-        return a.isChecked.toString().compareTo(b.isChecked.toString());
-      });
-  }
+  DateTime _currentDay = DateUtils.dateOnly(DateTime.now());
 
   void _checkBoxSwitch(String id, bool value) {
-    final index = _tasks.indexWhere((task) => task.id == id);
+    final index =
+        TasksManager.instance.tasks.indexWhere((task) => task.id == id);
     setState(() {
-      _tasks[index].isChecked = value;
-    });
-  }
-
-  void _addTask(String title, String description) {
-    final newTask = Task(
-      id: const Uuid().v4(),
-      title: title,
-      description: description,
-      isChecked: false,
-    );
-    setState(() {
-      _tasks.add(newTask);
-    });
-    Navigator.pop(context);
-  }
-
-  void _editTask(Task task) {
-    final index = _tasks.indexWhere((e) => e.id == task.id);
-
-    setState(() {
-      _tasks[index] = task;
-    });
-    Navigator.pop(context);
-  }
-
-  void _deleteTask(String id) {
-    final index = _tasks.indexWhere((task) => task.id == id);
-    setState(() {
-      _tasks.removeAt(index);
+      TasksManager.instance.tasks[index].isChecked = value;
     });
   }
 
   void _openTaskModal() {
-    showModalBottomSheet(context: context, builder: (_) => TaskForm(_addTask));
+    showModalBottomSheet(context: context, builder: (_) => const TaskForm())
+        .whenComplete(() {
+      setState(() {});
+    });
   }
 
   void _openTaksEditModal(Task task) {
     showModalBottomSheet(
-        context: context,
-        builder: (_) => TaskEditForm(
-              task,
-              _editTask,
-            ));
+      context: context,
+      builder: (_) => TaskEditForm(
+        task,
+      ),
+    ).whenComplete(() {
+      setState(() {});
+    });
+  }
+
+  void _nextDay() {
+    setState(() {
+      // _currentDay = _currentDay.add(const Duration(days: 1));
+      _currentDay = _currentDay.day + 1 >= DateTime.now().day + 7
+          ? _currentDay.subtract(const Duration(days: 6))
+          : _currentDay.add(const Duration(days: 1));
+    });
+  }
+
+  void _lastDay() {
+    setState(() {
+      // _currentDay = _currentDay.subtract(const Duration(days: 1));
+      _currentDay = _currentDay.day - 1 <= DateTime.now().day - 1
+          ? _currentDay.add(const Duration(days: 6))
+          : _currentDay.subtract(const Duration(days: 1));
+    });
   }
 
   @override
@@ -101,16 +101,23 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: SafeArea(
-        minimum: const EdgeInsets.symmetric(vertical: 5),
+        // minimum: const EdgeInsets.symmetric(vertical: 5),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              TaskListDay(
+                currentDay: _currentDay,
+                onBack: _lastDay,
+                onFoward: _nextDay,
+              ),
               TaskList(
-                tasks: _sortedTaskList(),
+                tasks: TasksManager.instance.sortedTaskList(_currentDay),
                 onCheck: _checkBoxSwitch,
                 onEdit: _openTaksEditModal,
-                onDelete: _deleteTask,
+                onDelete: () {
+                  setState(() {});
+                },
               ),
             ],
           ),
