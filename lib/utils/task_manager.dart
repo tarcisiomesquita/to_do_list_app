@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:to_do_list_app/data/dummy_data.dart';
 import 'package:to_do_list_app/models/task.dart';
 import 'package:uuid/uuid.dart';
@@ -7,7 +8,9 @@ class TasksManager {
 
   final List<Task> tasks = dummyTasks;
 
-  List<Task> sortedTaskList(DateTime currentDay) {
+  DateTime currentDay = DateUtils.dateOnly(DateTime.now());
+
+  List<Task> getSortedTaskList(DateTime currentDay) {
     return List<Task>.from(tasks)
       ..sort((a, b) {
         return a.title.toLowerCase().compareTo(b.title.toLowerCase());

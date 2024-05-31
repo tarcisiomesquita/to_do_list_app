@@ -3,14 +3,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:to_do_list_app/components/date_bar.dart';
-import 'package:to_do_list_app/data/dummy_data.dart';
-import 'package:to_do_list_app/styles/app_themes.dart';
-import 'package:to_do_list_app/components/task_edit_form.dart';
 import 'package:to_do_list_app/components/task_form.dart';
+import 'package:to_do_list_app/styles/app_themes.dart';
 import 'package:to_do_list_app/components/task_list.dart';
 import 'package:to_do_list_app/models/task.dart';
-import 'package:to_do_list_app/utils/methods.dart';
-import 'package:uuid/uuid.dart';
+import 'package:to_do_list_app/utils/task_manager.dart';
 
 void main() {
   runApp(const ToDoListApp());
@@ -44,49 +41,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  DateTime _currentDay = DateUtils.dateOnly(DateTime.now());
-
-  void _checkBoxSwitch(String id, bool value) {
-    final index =
-        TasksManager.instance.tasks.indexWhere((task) => task.id == id);
-    setState(() {
-      TasksManager.instance.tasks[index].isChecked = value;
-    });
-  }
-
   void _openTaskModal() {
-    showModalBottomSheet(context: context, builder: (_) => const TaskForm())
-        .whenComplete(() {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (_) => const TaskForm()).whenComplete(() {
       setState(() {});
     });
   }
 
-  void _openTaksEditModal(Task task) {
+  void _openTaskEditModal(Task task) {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
-      builder: (_) => TaskEditForm(
-        task,
+      builder: (_) => TaskForm(
+        task: task,
       ),
     ).whenComplete(() {
       setState(() {});
-    });
-  }
-
-  void _nextDay() {
-    setState(() {
-      // _currentDay = _currentDay.add(const Duration(days: 1));
-      _currentDay = _currentDay.day + 1 >= DateTime.now().day + 7
-          ? _currentDay.subtract(const Duration(days: 6))
-          : _currentDay.add(const Duration(days: 1));
-    });
-  }
-
-  void _lastDay() {
-    setState(() {
-      // _currentDay = _currentDay.subtract(const Duration(days: 1));
-      _currentDay = _currentDay.day - 1 <= DateTime.now().day - 1
-          ? _currentDay.add(const Duration(days: 6))
-          : _currentDay.subtract(const Duration(days: 1));
     });
   }
 
@@ -106,15 +78,19 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TaskListDay(
-                currentDay: _currentDay,
-                onBack: _lastDay,
-                onFoward: _nextDay,
+              DateBar(
+                currentDay: TasksManager.instance.currentDay,
+                onDayChanged: () {
+                  setState(() {});
+                },
               ),
               TaskList(
-                tasks: TasksManager.instance.sortedTaskList(_currentDay),
-                onCheck: _checkBoxSwitch,
-                onEdit: _openTaksEditModal,
+                tasks: TasksManager.instance
+                    .getSortedTaskList(TasksManager.instance.currentDay),
+                onCheck: () {
+                  setState(() {});
+                },
+                onEdit: _openTaskEditModal,
                 onDelete: () {
                   setState(() {});
                 },

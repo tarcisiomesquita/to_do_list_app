@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_list_app/utils/task_manager.dart';
 
-class TaskListDay extends StatelessWidget {
-  const TaskListDay(
-      {super.key,
-      required this.currentDay,
-      required this.onBack,
-      required this.onFoward});
+class DateBar extends StatelessWidget {
+  const DateBar({
+    super.key,
+    required this.currentDay,
+    required this.onDayChanged,
+  });
   final DateTime currentDay;
-  final void Function() onBack;
-  final void Function() onFoward;
+  final VoidCallback onDayChanged;
+
+  void _onNextDay() {
+    TasksManager.instance.currentDay = currentDay.add(const Duration(days: 1));
+    onDayChanged();
+  }
+
+  void _onLastDay() {
+    TasksManager.instance.currentDay =
+        currentDay.subtract(const Duration(days: 1));
+    onDayChanged();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +31,19 @@ class TaskListDay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: onBack,
+              onPressed: _onLastDay,
               icon: const Icon(Icons.arrow_back_ios),
               color: Theme.of(context).colorScheme.background,
             ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.6,
                 child: Text(
-                  DateFormat.EEEE().format(currentDay),
+                  DateFormat('dd/MM/yyyy').format(currentDay),
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.white),
                 )),
             IconButton(
-              onPressed: onFoward,
+              onPressed: _onNextDay,
               icon: const Icon(Icons.arrow_forward_ios),
               color: Theme.of(context).colorScheme.background,
             )

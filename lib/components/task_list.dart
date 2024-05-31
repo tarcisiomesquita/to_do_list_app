@@ -12,15 +12,25 @@ class TaskList extends StatelessWidget {
       super.key});
 
   final List<Task> tasks;
-  final void Function(String id, bool isChecked) onCheck;
+
   final void Function(Task task) onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onCheck;
 
   void _deleteTask(String id) {
     final index =
         TasksManager.instance.tasks.indexWhere((task) => task.id == id);
+
     TasksManager.instance.tasks.removeAt(index);
     onDelete();
+  }
+
+  void _checkBoxSwitch(String id, bool value) {
+    final index =
+        TasksManager.instance.tasks.indexWhere((task) => task.id == id);
+
+    TasksManager.instance.tasks[index].isChecked = value;
+    onCheck();
   }
 
   @override
@@ -93,7 +103,7 @@ class TaskList extends StatelessWidget {
                             trailing: Checkbox(
                                 value: task.isChecked,
                                 onChanged: (bool? value) {
-                                  onCheck(task.id, value!);
+                                  _checkBoxSwitch(task.id, value!);
                                 }),
                           ),
                         ),

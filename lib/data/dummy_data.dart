@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:to_do_list_app/models/task.dart';
 import 'package:uuid/uuid.dart';
 

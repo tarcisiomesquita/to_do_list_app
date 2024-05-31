@@ -1,37 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list_app/models/task.dart';
 import 'package:to_do_list_app/utils/format.intl.dart';
 import 'package:to_do_list_app/utils/task_manager.dart';
 
 class TaskForm extends StatefulWidget {
-  const TaskForm({super.key});
+  const TaskForm({this.task, super.key});
+
+  final Task? task;
 
   @override
-  State<TaskForm> createState() => TaskFormState();
+  State<TaskForm> createState() => _TaskFormState();
 }
 
-class TaskFormState extends State<TaskForm> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+class _TaskFormState extends State<TaskForm> {
+  late final bool isThereTask = widget.task != null;
 
-  DateTime _selectedDate = DateTime.now();
+  late final TextEditingController _titleController =
+      TextEditingController(text: isThereTask ? widget.task!.title : '');
+  late final TextEditingController _descriptionController =
+      TextEditingController(text: isThereTask ? widget.task!.description : '');
+
+  late DateTime _selectedDate =
+      isThereTask ? widget.task!.date : DateUtils.dateOnly(DateTime.now());
+
+  void _editTask(Task task) {
+    final index =
+        TasksManager.instance.tasks.indexWhere((e) => e.id == task.id);
+
+    TasksManager.instance.tasks[index] = task;
+
+    Navigator.pop(context);
+  }
 
   void _submitForm() {
-    final title = _titleController.text;
-    final description = _descriptionController.text;
-    if (title.isEmpty || description.isEmpty) {
-      return;
-    }
+    if (isThereTask) {
+      final editedTask = Task(
+        id: widget.task!.id,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        isChecked: widget.task!.isChecked,
+        date: _selectedDate,
+      );
 
-    TasksManager.instance.addTask(title, description, _selectedDate);
-    Navigator.pop(context);
+      if (editedTask.title.isEmpty || editedTask.description.isEmpty) {
+        return;
+      }
+      _editTask(editedTask);
+    } else {
+      final title = _titleController.text;
+      final description = _descriptionController.text;
+      if (title.isEmpty || description.isEmpty) {
+        return;
+      }
+
+      TasksManager.instance.addTask(title, description, _selectedDate);
+
+      Navigator.pop(context);
+    }
   }
 
   void _showDatePicker() {
     showDatePicker(
-            context: context,
-            firstDate: DateTime.now(),
-            lastDate: DateTime.now().add(const Duration(days: 6)))
-        .then((pickedDate) {
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2024),
+      lastDate: DateTime(2025),
+    ).then((pickedDate) {
       if (pickedDate == null) {
         return;
       }
@@ -45,27 +79,30 @@ class TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.fromLTRB(
+            10, 10, 10, 10 + MediaQuery.of(context).viewInsets.bottom),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _titleController,
-              textInputAction: TextInputAction.next,
               decoration: const InputDecoration(labelText: 'Título'),
+              textInputAction: TextInputAction.next,
             ),
             TextField(
               controller: _descriptionController,
-              onSubmitted: (_) => _submitForm(),
               decoration: const InputDecoration(labelText: 'Descrição'),
+              onSubmitted: (_) => _submitForm(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Text('Data: ${formatDate(_selectedDate)}'),
                 const Spacer(),
                 TextButton(
                     onPressed: _showDatePicker,
-                    child: const Text('Selecionar Data'))
+                    child:
+                        Text('${isThereTask ? 'Alterar' : 'Selecionar'} Data'))
               ],
             ),
             Row(
@@ -73,8 +110,8 @@ class TaskFormState extends State<TaskForm> {
               children: [
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text('Nova tarefa'),
-                ),
+                  child: Text(isThereTask ? 'Salvar' : 'Nova Tarefa'),
+                )
               ],
             )
           ],
