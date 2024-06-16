@@ -28,15 +28,6 @@ class _TaskFormState extends State<TaskForm> {
     super.initState();
   }
 
-  void _editTask(Task task) {
-    final index =
-        TasksManager.instance.tasks.indexWhere((e) => e.id == task.id);
-
-    TasksManager.instance.tasks[index] = task;
-
-    Navigator.pop(context);
-  }
-
   void _submitForm() {
     final title = _titleController.text;
     final description = _descriptionController.text;
@@ -53,13 +44,11 @@ class _TaskFormState extends State<TaskForm> {
         isChecked: widget.task!.isChecked,
         date: _selectedDate!,
       );
-
-      _editTask(editedTask);
+      TasksManager.instance.editTask(editedTask);
     } else {
       TasksManager.instance.addTask(title, description, _selectedDate!);
-
-      Navigator.pop(context);
     }
+    Navigator.pop(context);
   }
 
   void _showDatePicker() {

@@ -34,4 +34,16 @@ class TasksManager {
 
     tasks.add(newTask);
   }
+
+  void editTask(Task task) {
+    final index = tasks.indexWhere((e) => e.id == task.id);
+
+    tasks[index] = task;
+  }
+
+  void removeTask(String id) {
+    final index = tasks.indexWhere((task) => task.id == id);
+
+    tasks.removeAt(index);
+  }
 }

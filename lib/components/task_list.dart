@@ -18,10 +18,7 @@ class TaskList extends StatelessWidget {
   final VoidCallback onCheck;
 
   void _deleteTask(String id) {
-    final index =
-        TasksManager.instance.tasks.indexWhere((task) => task.id == id);
-
-    TasksManager.instance.tasks.removeAt(index);
+    TasksManager.instance.removeTask(id);
     onDelete();
   }
 
