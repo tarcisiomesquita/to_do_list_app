@@ -33,7 +33,7 @@ class DateBar extends StatelessWidget {
             IconButton(
               onPressed: _onLastDay,
               icon: const Icon(Icons.arrow_back_ios),
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
             ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.6,
@@ -45,7 +45,7 @@ class DateBar extends StatelessWidget {
             IconButton(
               onPressed: _onNextDay,
               icon: const Icon(Icons.arrow_forward_ios),
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
             )
           ],
         ),

@@ -4,9 +4,9 @@ import 'package:to_do_list_app/utils/format.intl.dart';
 import 'package:to_do_list_app/utils/task_manager.dart';
 
 class TaskForm extends StatefulWidget {
-  const TaskForm({this.task, super.key});
-
   final Task? task;
+
+  const TaskForm({this.task, super.key});
 
   @override
   State<TaskForm> createState() => _TaskFormState();
@@ -15,13 +15,18 @@ class TaskForm extends StatefulWidget {
 class _TaskFormState extends State<TaskForm> {
   late final bool isThereTask = widget.task != null;
 
-  late final TextEditingController _titleController =
-      TextEditingController(text: isThereTask ? widget.task!.title : '');
-  late final TextEditingController _descriptionController =
-      TextEditingController(text: isThereTask ? widget.task!.description : '');
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  DateTime? _selectedDate;
 
-  late DateTime _selectedDate =
-      isThereTask ? widget.task!.date : DateUtils.dateOnly(DateTime.now());
+  @override
+  void initState() {
+    _titleController.text = widget.task?.title ?? '';
+    _descriptionController.text = widget.task?.description ?? '';
+    _selectedDate = widget.task?.date ?? DateUtils.dateOnly(DateTime.now());
+
+    super.initState();
+  }
 
   void _editTask(Task task) {
     final index =
@@ -33,27 +38,25 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   void _submitForm() {
+    final title = _titleController.text;
+    final description = _descriptionController.text;
+
+    if (title.isEmpty || description.isEmpty) {
+      return;
+    }
+
     if (isThereTask) {
       final editedTask = Task(
         id: widget.task!.id,
-        title: _titleController.text,
-        description: _descriptionController.text,
+        title: title,
+        description: description,
         isChecked: widget.task!.isChecked,
-        date: _selectedDate,
+        date: _selectedDate!,
       );
 
-      if (editedTask.title.isEmpty || editedTask.description.isEmpty) {
-        return;
-      }
       _editTask(editedTask);
     } else {
-      final title = _titleController.text;
-      final description = _descriptionController.text;
-      if (title.isEmpty || description.isEmpty) {
-        return;
-      }
-
-      TasksManager.instance.addTask(title, description, _selectedDate);
+      TasksManager.instance.addTask(title, description, _selectedDate!);
 
       Navigator.pop(context);
     }
@@ -97,12 +100,12 @@ class _TaskFormState extends State<TaskForm> {
             const SizedBox(height: 10),
             Row(
               children: [
-                Text('Data: ${formatDate(_selectedDate)}'),
+                Text('Data: ${formatDate(_selectedDate!)}'),
                 const Spacer(),
                 TextButton(
-                    onPressed: _showDatePicker,
-                    child:
-                        Text('${isThereTask ? 'Alterar' : 'Selecionar'} Data'))
+                  onPressed: _showDatePicker,
+                  child: Text('${isThereTask ? 'Alterar' : 'Selecionar'} Data'),
+                )
               ],
             ),
             Row(
